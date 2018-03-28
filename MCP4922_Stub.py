@@ -1,20 +1,39 @@
+# MCP4922 Test code for interfacing the MCP4922 12 bit digital to analog converter with the Raspberry Pi 2
+# Phillia Steiner - March 27, 2018
 
-# MOSI to pin 19, CLK to pin 23, CS to pin 24, LDAC to GND
+# Connect:
+# Vcc to +3.3v, and 1 GND pin to GND
+# SDI to pin 19 (MOSI), SCLK to pin 23 (SPI CLK), CS to pin 24 (CE0), LDAC to GND, SHDN to Vcc
+# Note that Vref should be between Vcc and GND
 
-import math # Import math package
-import spidev # Import SPI package
-import time
+
+# WriteToDAC(channel,data,isOn)
+# 
+# "channel" selects between the DAC output to write to
+#       0 - Write to channel A
+#       1 - Write to channel B
+# ---
+# "data" is the dac value to write to the selected channel
+#       Should be a positive integer value between 0 and 2^12-1 (4095)
+# ---
+# "isOn" changes the on/off state of the selected DAC channel
+#       0 - Shuts down the selected DAC channel (Reduces power consumption)
+#       1 - Enables the selected DAC channel
+# ---
+# Vout = Vref* data/4095 where data is a base 10 value
+
+import spidev # Import SPI package - unique to the raspberry pi
 
 spi = spidev.SpiDev() # Create Spi Object
 
-gain = 1 # Gain is 1x
+gain = 1 # Gain is 1x, can be changed to 0 to get a 2x gain
     
 
-def WriteToDAC(channel,data,on):
+def WriteToDAC(channel,data,isOn):
 
-    bytesOut = [0,0]
+    bytesOut = [0,0] # Preallocate as local variable
 
-    if not on: # Write 0 to register and a 1 to SHDN to turn off channel
+    if not isOn: # Write 0 to register and a 1 to SHDN to turn off channel
         bytesOut[0] |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
         
         spi.xfer2(bytesOut) # Write Bytes to DAC
@@ -25,16 +44,16 @@ def WriteToDAC(channel,data,on):
     bytesOut[1] = data & 255 # Use 255 as 8 bit bitmask to get first 8 bits of data
     bytesOut[0] |= ((data >> 8) & 15) # Use 15 as 4 bit bitmask to get last 4 bits of data
 
-    #print(bin(bytesOut[0]))
-    #print(bin(bytesOut[1]))
-    #print("")
-    spi.xfer2(bytesOut)
+    spi.xfer2(bytesOut) # Write Bytes to DAC
 
 
 spi.open(0,0)  # Open spi port 0, device (CE) 0 (Connect to pin 24)
-spi.max_speed_hz = 100000 # Set clk to max 16MHz
-		
-while 1:
+spi.max_speed_hz = 100000 # Set clk to max 100kHz (Can be higher...)
+
+
+
+while 1: # Cycles through DAC register to generate sawtooth waveform
 	for i in range(0, 4096, 2):
 
 		WriteToDAC(0,i,1)
+
