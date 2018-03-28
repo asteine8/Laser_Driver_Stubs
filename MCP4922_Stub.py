@@ -6,40 +6,28 @@ import spidev # Import SPI package
 
 spi = spidev.SpiDev() # Create Spi Object
 
-gain = 1 # Gain is 1
-
-def Int2Bytes(integer):
-    # Convert int datatype into "bytes" datatype
-    if integer < 0:
-        integer *= -1 # Convert to positive number
-
-    bits = len(bin(integer)) # Get number of bits in integer
-    bOuts = bytes([0])
-    bOuts *= math.ceil(bits/8) # Extend array to encompass entire integer
-
-    for i in range( len(bOuts) ):
-        bOuts(len(bOuts)-i-1) |= (integer >> (8 * i)) & 256
-
-    return bOuts
+gain = 1 # Gain is 1x
     
 
-def WriteToDAC(channel,data,onOff):
+def WriteToDAC(channel,data,on):
 
-    bytesOut = bytes([0,0])
+    bytesOut = [0,0]
 
-    if onOff: # Write 0 to register and a 1 to SHDN to turn off channel
-        bytesOut(1) |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
+    if not on: # Write 0 to register and a 1 to SHDN to turn off channel
+        bytesOut[1] |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
         
-        spi.writebytes(bytesOut) # Write Bytes to DAC
+        # spi.writebytes(bytesOut) # Write Bytes to DAC
 
-    bytesOut(1) |= (channel << 7) | (gain << 5) # select channel and gain
-    bytesOut(1) |= (1 << 4) # Don't shutdown the channel
+    bytesOut[1] |= (channel << 7) | (gain << 5) # select channel and gain
+    bytesOut[1] |= (1 << 4) # Don't shutdown the channel
 
+    bytesOut[0] = data & 255 # Use 255 as 8 bit bitmask to get first 8 bits of data
+    bytesOut[1] |= (data >> 8) & 15 # Use 15 as 4 bit bitmask to get last 4 bits of data
 
-
-    
+    print(bytesOut)
 
 
 
 spi.open(0,0)  # Open spi port 0, device (CE) 0 (Connect to pin 24)
 
+WriteToDAC(1,1750,1)
