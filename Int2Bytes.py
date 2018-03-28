@@ -24,7 +24,7 @@ def PrintBytes(byts):
         
         for b in range(8):
 
-            sys.stdout.write( str((byts[i] >> (8-b-1)) & 1) )
+            sys.stdout.write( str((byts[i] >> (8-b-1)) & 1) ) 
         
     print("")
 
