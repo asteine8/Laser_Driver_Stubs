@@ -16,7 +16,7 @@ def WriteToDAC(channel,data,on):
     if not on: # Write 0 to register and a 1 to SHDN to turn off channel
         bytesOut[1] |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
         
-        # spi.writebytes(bytesOut) # Write Bytes to DAC
+        spi.xfer2(bytesOut) # Write Bytes to DAC
 
     bytesOut[1] |= (channel << 7) | (gain << 5) # select channel and gain
     bytesOut[1] |= (1 << 4) # Don't shutdown the channel
@@ -24,7 +24,9 @@ def WriteToDAC(channel,data,on):
     bytesOut[0] = data & 255 # Use 255 as 8 bit bitmask to get first 8 bits of data
     bytesOut[1] |= (data >> 8) & 15 # Use 15 as 4 bit bitmask to get last 4 bits of data
 
-    print(bytesOut)
+    # print(bin(bytesOut[1]))
+    # print(bin(bytesOut[0]))
+    spi.xfer2(bytesOut)
 
 
 
