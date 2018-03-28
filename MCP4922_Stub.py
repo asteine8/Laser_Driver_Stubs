@@ -1,5 +1,5 @@
 
-# MOSI to pin 19, CLK to pin 23, CS to pin 24
+# MOSI to pin 19, CLK to pin 23, CS to pin 24, LDAC to GND
 
 import math # Import math package
 import spidev # Import SPI package
@@ -24,12 +24,12 @@ def WriteToDAC(channel,data,on):
     bytesOut[0] = data & 255 # Use 255 as 8 bit bitmask to get first 8 bits of data
     bytesOut[1] |= (data >> 8) & 15 # Use 15 as 4 bit bitmask to get last 4 bits of data
 
-    # print(bin(bytesOut[1]))
-    # print(bin(bytesOut[0]))
+    print(bin(bytesOut[1]))
+    print(bin(bytesOut[0]))
     spi.xfer2(bytesOut)
 
 
 
 spi.open(0,0)  # Open spi port 0, device (CE) 0 (Connect to pin 24)
-
-WriteToDAC(1,1750,1)
+spi.max_speed_hz = 16*10^6 # Set clk to max 16MHz
+WriteToDAC(1,500,1)
