@@ -15,7 +15,7 @@ def Voltage(power):
 
 def OpPower(voltage):
     # A function to convert voltage
-    power = voltage
+    power = voltage 
     return power
 
 def GetTTLVoltage(device, gain, numSamples):
@@ -23,7 +23,7 @@ def GetTTLVoltage(device, gain, numSamples):
     runSum = 0
 
     for i in range(numSamples):
-        runSum += ADS1115.ReadFromADCDifferntial(device, TTL_ADC_CHANNEL, gain)
+        runSum += ADS1115.ReadFromADCDifferential(device, TTL_ADC_CHANNEL, gain)
     
     return ADS1115.ConvertToVoltage(runSum/numSamples, gain)
 
@@ -32,7 +32,7 @@ def GetPhotodiodeVoltage(device, gain, numSamples):
     runSum = 0
 
     for i in range(numSamples):
-        runSum += ADS1115.ReadFromADCDifferntial(device, PHOTO_ADC_CHANNEL, gain)
+        runSum += ADS1115.ReadFromADCDifferential(device, PHOTO_ADC_CHANNEL, gain)
     
     return ADS1115.ConvertToVoltage(runSum/numSamples, gain)
 

@@ -18,7 +18,7 @@ def ConvertToVoltage(reading, adcGain):
     elif adcGain == 8:
         return reading * 0.000015625
     elif adcGain == 16:
-	return reading * 0.0000078125
+	    return reading * 0.0000078125
 
 
 ADS1115 = Adafruit_ADS1x15.ADS1115(address=ADS1115_ADDRESS) # Declare ADS1115 as our adc object
@@ -30,10 +30,10 @@ while 1:
     runSum = 0 # Preallocate running sum variable
     numSamples = 50
     for i in range(numSamples): # iterate for each sample
-	# data = ADS1115.get_last_result()
-	# runSum += data
-	# print(data)
-	runSum += ADS1115.get_last_result() # Sum with aquired data
+        # data = ADS1115.get_last_result()
+        # runSum += data
+        # print(data)
+        runSum += ADS1115.get_last_result() # Sum with aquired data
 
     aveVolts = ConvertToVoltage(runSum/numSamples, gain) # Get average voltage
     print(aveVolts) # Output average voltage to console

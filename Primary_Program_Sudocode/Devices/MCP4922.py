@@ -1,3 +1,10 @@
+# MCP4922 control and data conversion functions
+# Phillia Steiner 4/12/18
+
+# Connect:
+# Vcc to +3.3v, and 1 GND pin to GND
+# SDI to pin 19 (MOSI), SCLK to pin 23 (SPI CLK), CS to pin 24 (CE0), LDAC to GND, SHDN to Vcc
+# Note that Vref should be between Vcc and GND
 
 # import spidev
 
@@ -21,6 +28,8 @@ def WriteToDAC(device, channel, data, gain):
 
 
 def DeactivateDAC(device, channel):
+    # Calling this function dectivates the selected channel on the provided device
+
     bytesOut = [0,0] # Preallocate as local variable
 
     bytesOut[0] |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
@@ -29,4 +38,6 @@ def DeactivateDAC(device, channel):
     print("DAC Off")
 
 def ConvertVoltageToDACValue(voltage, vRef):
+    # Converts a voltage value to data to write to the MCP4922 given a value of vRef
+
     return voltage / vRef * 4096
