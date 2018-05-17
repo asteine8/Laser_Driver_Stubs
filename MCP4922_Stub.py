@@ -2,7 +2,7 @@
 # Phillia Steiner - March 27, 2018
 
 # Connect:
-# Vcc to +3.3v, and 1 GND pin to GND
+# Vcc to +3.3v, and one GND pin to GND
 # SDI to pin 19 (MOSI), SCLK to pin 23 (SPI CLK), CS to pin 24 (CE0), LDAC to GND, SHDN to Vcc
 # Note that Vref should be between Vcc and GND
 
@@ -23,10 +23,14 @@
 # Vout = Vref* data/4095 where data is a base 10 value
 
 import spidev # Import SPI package - unique to the raspberry pi
+import sys
+import time
 
 spi = spidev.SpiDev() # Create Spi Object
 
 gain = 1 # Gain is 1x, can be changed to 0 to get a 2x gain
+
+Vcc = 3.3 # Input voltage
     
 
 def WriteToDAC(channel,data,isOn):
@@ -46,14 +50,11 @@ def WriteToDAC(channel,data,isOn):
 
     spi.xfer2(bytesOut) # Write Bytes to DAC
 
-
+sys.stdout.write("Initializing\n")
 spi.open(0,0)  # Open spi port 0, device (CE) 0 (Connect to pin 24)
 spi.max_speed_hz = 100000 # Set clk to max 100kHz (Can be higher...)
 
+voltage = input("Enter Target Voltage: ")
+WriteToDAC(1, round(voltage/Vcc*4096), 0)
 
-
-while 1: # Cycles through DAC register to generate sawtooth waveform
-	for i in range(0, 4096, 2):
-
-		WriteToDAC(0,i,1)
 

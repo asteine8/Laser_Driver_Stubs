@@ -27,7 +27,7 @@ class Laser:
     MCP4922 = spidev.SpiDev() # Create a spi object for the DAC
     ADS1115 = Adafruit_ADS1x15.ADS1115(address=ADS1115_ADDRESS) # Create an I2C object for the ADC
 
-    dataPoints = 
+    dataPoints = range(1)
 
 
     def __init__(self):
@@ -49,4 +49,5 @@ class Laser:
         return targetPower - self.currentPower # Return difference (negative if under power)
 
     def JumpToInitialOptimization(self, targetPower):
+        # 
         
