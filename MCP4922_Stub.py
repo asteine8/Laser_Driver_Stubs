@@ -2,7 +2,7 @@
 # Phillia Steiner - March 27, 2018
 
 # Connect:
-# Vcc to +3.3v, and one GND pin to GND
+# Vcc to +3.3v, and one GND pin to GND     
 # SDI to pin 19 (MOSI), SCLK to pin 23 (SPI CLK), CS to pin 24 (CE0), LDAC to GND, SHDN to Vcc
 # Note that Vref should be between Vcc and GND
 
@@ -31,7 +31,8 @@ spi = spidev.SpiDev() # Create Spi Object
 gain = 1 # Gain is 1x, can be changed to 0 to get a 2x gain
 
 Vcc = 3.3 # Input voltage
-    
+VoltageOffset = 0.000  # Voltage offset from input data (experimental) 
+voltage = 0
 
 def WriteToDAC(channel,data,isOn):
 
@@ -41,7 +42,8 @@ def WriteToDAC(channel,data,isOn):
         bytesOut[0] |= (0 << 4) | (channel << 7) # Write a 0 to the SHDN bit and select channel
         
         spi.xfer2(bytesOut) # Write Bytes to DAC
-
+	
+    sys.stdout.write(str(data) + "\n")
     bytesOut[0] |= (channel << 7) | (gain << 5) # select channel and gain
     bytesOut[0] |= (1 << 4) # Don't shutdown the channel
 
@@ -53,8 +55,11 @@ def WriteToDAC(channel,data,isOn):
 sys.stdout.write("Initializing\n")
 spi.open(0,0)  # Open spi port 0, device (CE) 0 (Connect to pin 24)
 spi.max_speed_hz = 100000 # Set clk to max 100kHz (Can be higher...)
-
-voltage = input("Enter Target Voltage: ")
-WriteToDAC(1, round(voltage/Vcc*4096), 0)
-
-
+while True:
+    dataIn  = input("Enter Target Voltage: ")
+    if dataIn == -1:
+	voltage += 0.05 # Increment Voltage by 50mV
+        WriteToDAC(0, int(round(voltage/Vcc*4095)-VoltageOffset), 1)
+    else:
+	voltage = dataIn
+        WriteToDAC(0, int(round(dataIn/Vcc*4095)-VoltageOffset), 1)
