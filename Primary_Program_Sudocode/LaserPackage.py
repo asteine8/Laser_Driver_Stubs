@@ -27,7 +27,8 @@ class Laser:
     MCP4922 = spidev.SpiDev() # Create a spi object for the DAC
     ADS1115 = Adafruit_ADS1x15.ADS1115(address=ADS1115_ADDRESS) # Create an I2C object for the ADC
 
-    dataPoints = range(1)
+    voltageData = range(2)
+    opPowerData = range(2)
 
 
     def __init__(self):
@@ -42,6 +43,9 @@ class Laser:
         # Change TTL voltage to calculated target
         self.peripheral.WriteToDAC(self.MCP4922, 0, voltage, 1, self.VREF_VOLTAGE)
 
+        # Record Effect on system
+        opPowerData[1] = convert.self.peripheral.GetPhotodiodeVoltage(self.ADS1115, self.ADC_GAIN, self.NUM_ADC_SAMPLES)
+        
     def GetDeltaOpticalPower(self, targetPower):
         # Get current optical power
         self.currentPower = convert.PhotodiodeVoltageToOpPower(self.peripheral.GetPhotodiodeVoltage(self.ADS1115, self.ADC_GAIN, self.NUM_ADC_SAMPLES))
@@ -50,4 +54,5 @@ class Laser:
 
     def JumpToInitialOptimization(self, targetPower):
         # 
+
         
