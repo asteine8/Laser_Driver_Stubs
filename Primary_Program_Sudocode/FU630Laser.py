@@ -1,3 +1,8 @@
+"""
+Phillia Steiner, 2018
+FU630Laser.py
+This package allows one to interface with a FU-630SLD pump laser utilizing the ADS1115 ADC and the MCP4922 DAC modules. Four pump lasers can be attached at once due to the limited number of spi CE ports (two count).
+"""
 
 import ConversionFunctions as convert
 import Devices
@@ -6,9 +11,9 @@ import spidev
 import Adafruit_ADS1x15
 
 import time
-import random
+# import random
 
-class Laser:
+class FU630_Laser:
 
     # DAC Consts
     DAC_PORT = 0 # Port 0 for spi (default)
@@ -42,6 +47,8 @@ class Laser:
     def __init__(self): # Do on class initialization
         self.MCP4922.open(self.DAC_PORT, self.DAC_CE) # Open spi port 0, device (CE) 0 (Connect to pin 24)
         self.MCP4922.max_speed_hz = self.DAC_SPI_SPEED # Set clk to max 100kHz (Can be higher...)
+        self.optimizationState = 0
+        self.functionList = [self.JumpToOpPower, self.JumpToInitialOptimization, self.ApplyTwoPointOptimization]
 
     def GetDeltaOpticalPower(self, targetPower):
         # Get current optical power
@@ -92,5 +99,22 @@ class Laser:
         self.peripheral.WriteToDAC(self.MCP4922, self.TTL_DAC_CHANNEL, voltage, self.DAC_GAIN, self.VREF_VOLTAGE)
 
         self.RecordData() # Record state of system
+    
+    def ModifyOptimizationState(self):
+        if self.optimizationState < len(self.functionList) - 1:
+            self.optimizationState += 1
 
-    def 
+    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # User Functions (The only functions a user really needs to use)
+
+    def SetTargetOpticalPower(self, targetPower):
+        # Function to set target optical power to enhance readability of user code
+        self.targetOpPower = targetPower
+        self.optimizationState = 0 # Reset optimization state
+
+    def OptimizeOpticalPower(self):
+        # optimize to set optical power target
+        self.functionList[self.optimizationState](self.targetOpPower) # Call appropiate function with target optical power
+        self.ModifyOptimizationState() # Change the optimization State
+    
+
