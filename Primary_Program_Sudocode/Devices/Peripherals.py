@@ -2,12 +2,6 @@
 import ADS1115
 import MCP4922
 
-# Constant Declarations
-ADS1115_ADDRESS = 0x49
-TTL_ADC_CHANNEL = 3 # ADS1115 channel 3 for the library coresponds to a differential adc input of channel 2 minus channel 3
-PHOTO_ADC_CHANNEL = 0 # ADS1115 channel 0 for the library coresponds to a differential adc input of channel 0 minus channel 1
-
-
 def Voltage(power):
     # A function to convert optical power to voltage
     voltage = power
@@ -18,21 +12,21 @@ def OpPower(voltage):
     power = voltage 
     return power
 
-def GetTTLVoltage(device, gain, numSamples):
+def GetTTLVoltage(device, channel, gain, numSamples):
     # A function to return the average of "numSamples" readings with a set gain
     runSum = 0
 
-    for i in range(numSamples):
-        runSum += ADS1115.ReadFromADCDifferential(device, TTL_ADC_CHANNEL, gain)
+    for i in range(numSamples):  # Average samples
+        runSum += ADS1115.ReadFromADC(device, channel, gain)
     
     return ADS1115.ConvertToVoltage(runSum/numSamples, gain)
 
-def GetPhotodiodeVoltage(device, gain, numSamples):
+def GetPhotodiodeVoltage(device, channel, gain, numSamples):
 
     runSum = 0
 
-    for i in range(numSamples):
-        runSum += ADS1115.ReadFromADCDifferential(device, PHOTO_ADC_CHANNEL, gain)
+    for i in range(numSamples): # Average samples
+        runSum += ADS1115.ReadFromADCDifferential(device, channel, gain)
     
     return ADS1115.ConvertToVoltage(runSum/numSamples, gain)
 

@@ -7,16 +7,21 @@
 # Uses the Adafruit ADS1x15 library Copyright (c) 2016 Adafruit Industries
 
 
-# import Adafruit_ADS1x15
+import Adafruit_ADS1x15
 
 import random
 
 def ReadFromADCDifferential(device, channel, gain):
-    # Gets data from the ADS1115 with variable channel and gain
+    # Gets differenetial data from the ADS1115 with variable channel and gain
 
-    # return device.read_adc_difference(channel, gain)
+    return device.read_adc_difference(channel, gain)
 
-    return random.randint(-2**15,2**15)
+    # return random.randint(-2**15,2**15) # Placeholder code
+
+def ReadFromADC(device, channel, gain):
+    # Gets non differential data from the ADS1115
+
+    return device.read_adc(channel, gain)
 
 def ConvertToVoltage(data, gain):
     # Converts ADS1115 signed data to a voltage value based on the gain of the reading
