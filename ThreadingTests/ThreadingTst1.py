@@ -52,8 +52,8 @@ Exit = False #Exit flag
 while Exit==False:
  cycle = cycle + 0.1 
  print "Main Program increases cycle+0.1 - ", cycle
- time.sleep(1) #One second delay
- if (cycle > 5): Exit = True #Exit Program
+ time.sleep(0.1) #One second delay
+ if (cycle > 50): Exit = True #Exit Program
 
 TwoSecond.terminate()
 FiveSecond.terminate()
